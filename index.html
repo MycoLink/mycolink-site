@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Inspection evidence infrastructure for NDE/QA teams. Asset-centric governance, on-premises deployment, complete traceability.">
+<title>MycoLink — Inspection Evidence Infrastructure</title>
+<link rel="icon" type="image/png" href="/mycolink_favicon.png">
+<link rel="apple-touch-icon" href="/mycolink_favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-elevated: #121212;
+    --surface: #181818;
+    --text: #f5f5f5;
+    --text-secondary: #a0a0a0;
+    --text-tertiary: #666666;
+    --border: #1f1f1f;
+    --border-strong: #2a2a2a;
+    --accent: #d97757;
+    --accent-dim: #8a4a37;
+    --accent-glow: rgba(217, 119, 87, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Geist', -apple-system, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* =========================
+     NAV
+     ========================= */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  nav.scrolled { border-bottom-color: var(--border); }
+
+  .logo {
+    font-family: 'Geist', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.15em;
+  }
+  .logo-myco { font-weight: 300; }
+  .logo-link { font-weight: 700; }
+  .logo-dot {
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-left: 2px;
+    transform: translateY(-4px);
+    display: inline-block;
+  }
+
+  .nav-cta {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    padding: 0.5rem 1.125rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .nav-cta:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* =========================
+     SHARED
+     ========================= */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-tertiary);
+    margin-bottom: 1.5rem;
+  }
+
+  .eyebrow.accent { color: var(--accent); }
+
+  /* =========================
+     HERO
+     ========================= */
+  .hero {
+    min-height: 100vh;
+    padding: 10rem 3rem 6rem;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1500px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 20%; left: -20%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.2s;
+  }
+
+  h1.hero-headline {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    margin-bottom: 1.75rem;
+  }
+  h1.hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    font-weight: 400;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 2px;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+  }
+  .btn-primary:hover {
+    background: var(--accent);
+    color: var(--text);
+    transform: translateX(2px);
+  }
+  .btn-primary .arrow {
+    transition: transform 0.2s ease;
+  }
+  .btn-primary:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  .btn-ghost {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-decoration: none;
+    padding: 0.875rem 0;
+    transition: color 0.2s ease;
+    font-weight: 400;
+  }
+  .btn-ghost:hover { color: var(--text); }
+
+  /* =========================
+     HERO DIAGRAM
+     ========================= */
+  .diagram-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 520px;
+  }
+
+  .diagram-svg {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+  }
+
+  .node-group { opacity: 0; }
+  .node-group.visible {
+    animation: nodeAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes nodeAppear {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .node-rect {
+    fill: var(--bg-elevated);
+    stroke: var(--border-strong);
+    stroke-width: 1;
+    transition: all 0.4s ease;
+  }
+  .node-group.pulsing .node-rect {
+    stroke: var(--accent);
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+  }
+
+  .node-label {
+    font-family: 'Geist', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    fill: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .node-sublabel {
+    font-family: 'Geist', sans-serif;
+    font-size: 9px;
+    fill: var(--text-tertiary);
+    font-weight: 400;
+  }
+
+  .connector-line {
+    stroke: var(--border-strong);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  .connector-line.drawn {
+    animation: drawLine 0.8s ease forwards;
+  }
+  @keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .accent-dot {
+    fill: var(--accent);
+    opacity: 0;
+  }
+  .accent-dot.visible {
+    animation: dotAppear 0.4s ease forwards;
+  }
+  @keyframes dotAppear {
+    from { opacity: 0; transform: scale(0); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* =========================
+     SECTIONS
+     ========================= */
+  section.content-section {
+    padding: 8rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-header {
+    max-width: 640px;
+    margin-bottom: 4rem;
+  }
+
+  h2.section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+  h2.section-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .section-lede {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 560px;
+  }
+
+  /* =========================
+     PROBLEM SECTION
+     ========================= */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-top: 2rem;
+  }
+
+  .problem-item {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-strong);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .problem-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .problem-number {
+    font-family: 'Geist', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+
+  .problem-statement {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.625rem;
+    line-height: 1.25;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin-bottom: 1rem;
+  }
+
+  .problem-detail {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  /* =========================
+     SOLUTION SECTION
+     ========================= */
+  .solution-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 960px;
+  }
+
+  .solution-row {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr;
+    gap: 3rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+    align-items: baseline;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .solution-row.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .solution-row:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .solution-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-tertiary);
+    padding-top: 0.375rem;
+  }
+
+  .solution-body {
+    font-size: 1.25rem;
+    line-height: 1.45;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .solution-spec {
+    font-size: 0.8125rem;
+    color: var(--accent);
+    text-align: right;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding-top: 0.5rem;
+  }
+
+  /* =========================
+     CAPABILITIES SECTION
+     ========================= */
+  .capabilities {
+    background: var(--bg-elevated);
+    padding: 8rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+  }
+
+  .cap-item {
+    padding: 2rem 0;
+    border-top: 1px solid var(--accent);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .cap-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cap-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .cap-desc {
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  /* =========================
+     CTA SECTION
+     ========================= */
+  .cta-section {
+    padding: 10rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  h2.cta-headline {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h2.cta-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .cta-sub {
+    font-size: 1.0625rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.55;
+  }
+
+  .btn-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--text);
+    color: var(--bg);
+    padding: 1.125rem 2.25rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 2px;
+    letter-spacing: 0.01em;
+    transition: all 0.25s ease;
+  }
+  .btn-large:hover {
+    background: var(--accent);
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px var(--accent-glow);
+  }
+
+  /* =========================
+     FOOTER
+     ========================= */
+  footer {
+    padding: 3rem 3rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+  }
+
+  footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-left: 2rem;
+    transition: color 0.2s ease;
+  }
+  footer a:hover { color: var(--text); }
+
+  /* =========================
+     ANIMATIONS
+     ========================= */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =========================
+     RESPONSIVE
+     ========================= */
+  @media (max-width: 960px) {
+    nav { padding: 1rem 1.5rem; }
+    .container, .hero { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .hero {
+      grid-template-columns: 1fr;
+      padding-top: 8rem;
+      padding-bottom: 4rem;
+      min-height: auto;
+      gap: 3rem;
+    }
+    .diagram-wrapper { min-height: 400px; }
+    .problem-grid, .cap-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .solution-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding: 2rem 0;
+    }
+    .solution-spec { text-align: left; }
+    section.content-section { padding: 5rem 0; }
+    .cta-section { padding: 6rem 0; }
+    footer {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+    footer a { margin: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#" class="logo">
+    <span class="logo-myco">Myco</span><span class="logo-link">Link</span><span class="logo-dot"></span>
+  </a>
+  <a href="https://outlook.office365.com/owa/calendar/NexusDemo@mycolink.com/bookings/" class="nav-cta" target="_blank" rel="noopener">Schedule demo</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow accent">NEXUS · INSPECTION EVIDENCE INFRASTRUCTURE</div>
+    <h1 class="hero-headline">Governed <em>traceability</em> for NDE and QA teams.</h1>
+    <p class="hero-sub">
+      On-premises inspection evidence management built for how quality teams actually work.
+      Click a component, see every inspection ever performed on it.
+    </p>
+    <div class="hero-ctas">
+      <a href="https://outlook.office365.com/owa/calendar/NexusDemo@mycolink.com/bookings/" class="btn-primary" target="_blank" rel="noopener">
+        Schedule a demo
+        <span class="arrow">→</span>
+      </a>
+      <a href="#how" class="btn-ghost">How it works</a>
+    </div>
+  </div>
+
+  <div class="diagram-wrapper">
+    <svg class="diagram-svg" viewBox="0 0 480 560" xmlns="http://www.w3.org/2000/svg">
+      <!-- Connector lines (drawn first, behind nodes) -->
+      <line class="connector-line" x1="240" y1="80" x2="240" y2="130" data-order="1"/>
+      <line class="connector-line" x1="240" y1="180" x2="240" y2="230" data-order="3"/>
+      <line class="connector-line" x1="240" y1="280" x2="240" y2="330" data-order="5"/>
+      <line class="connector-line" x1="240" y1="380" x2="240" y2="430" data-order="7"/>
+
+      <!-- SITE node -->
+      <g class="node-group" data-order="0">
+        <rect class="node-rect" x="120" y="30" width="240" height="50" rx="2"/>
+        <text class="node-label" x="240" y="54" text-anchor="middle">SITE</text>
+        <text class="node-sublabel" x="240" y="70" text-anchor="middle">Lincoln Manufacturing Facility</text>
+      </g>
+
+      <!-- SYSTEM node -->
+      <g class="node-group" data-order="2">
+        <rect class="node-rect" x="120" y="130" width="240" height="50" rx="2"/>
+        <text class="node-label" x="240" y="154" text-anchor="middle">SYSTEM</text>
+        <text class="node-sublabel" x="240" y="170" text-anchor="middle">CB-2026-0147 · Watertube Boiler</text>
+      </g>
+
+      <!-- COMPONENT node -->
+      <g class="node-group" data-order="4">
+        <rect class="node-rect" x="120" y="230" width="240" height="50" rx="2"/>
+        <text class="node-label" x="240" y="254" text-anchor="middle">COMPONENT</text>
+        <text class="node-sublabel" x="240" y="270" text-anchor="middle">TS-147-F · Front Tubesheet</text>
+      </g>
+
+      <!-- INSPECTION node -->
+      <g class="node-group" data-order="6">
+        <rect class="node-rect" x="120" y="330" width="240" height="50" rx="2"/>
+        <text class="node-label" x="240" y="354" text-anchor="middle">INSPECTION</text>
+        <text class="node-sublabel" x="240" y="370" text-anchor="middle">MT · 2025-10-12 · 144 welds</text>
+      </g>
+
+      <!-- EVIDENCE node -->
+      <g class="node-group" data-order="8">
+        <rect class="node-rect" x="60" y="430" width="360" height="90" rx="2"/>
+        <text class="node-label" x="240" y="454" text-anchor="middle">EVIDENCE FILES</text>
+        <circle class="accent-dot" cx="110" cy="490" r="4" data-order="9"/>
+        <text class="node-sublabel" x="125" y="494">report.pdf</text>
+        <circle class="accent-dot" cx="210" cy="490" r="4" data-order="10"/>
+        <text class="node-sublabel" x="225" y="494">scan.opd</text>
+        <circle class="accent-dot" cx="310" cy="490" r="4" data-order="11"/>
+        <text class="node-sublabel" x="325" y="494">cal.csv</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="content-section" id="how">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">THE PROBLEM</div>
+      <h2 class="section-title">Inspection data lives in <em>folders</em>. It shouldn't.</h2>
+      <p class="section-lede">
+        Every audit, every containment event, every engineering review starts the same way — digging through
+        dated folders across network drives to reconstruct what happened.
+      </p>
+    </div>
+
+    <div class="problem-grid">
+      <div class="problem-item">
+        <span class="problem-number">01</span>
+        <p class="problem-statement">Retrieval takes hours or days.</p>
+        <p class="problem-detail">
+          Finding every inspection on one component requires navigating thousands of folders organized by date,
+          job number, or inspector — not by the thing being inspected.
+        </p>
+      </div>
+
+      <div class="problem-item">
+        <span class="problem-number">02</span>
+        <p class="problem-statement">Traceability lives in tribal knowledge.</p>
+        <p class="problem-detail">
+          The person who remembers where the 2018 PT scans are stored is the only person who can find them.
+          When they leave, that knowledge leaves with them.
+        </p>
+      </div>
+
+      <div class="problem-item">
+        <span class="problem-number">03</span>
+        <p class="problem-statement">Audits become scavenger hunts.</p>
+        <p class="problem-detail">
+          Proving compliance means pulling records across disconnected systems, manually verifying that every
+          required inspection was performed, recorded, and archived correctly.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="content-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">THE APPROACH</div>
+      <h2 class="section-title">Asset-centric by <em>design</em>.</h2>
+      <p class="section-lede">
+        Nexus inverts the model. Your data is organized around the physical things you inspect — not the dates,
+        jobs, or inspectors who touched them.
+      </p>
+    </div>
+
+    <div class="solution-list">
+      <div class="solution-row">
+        <div class="solution-label">01 / STRUCTURE</div>
+        <div class="solution-body">
+          Every file is linked to a component. Every component rolls up to a system. Every system belongs to a site.
+        </div>
+        <div class="solution-spec">Hierarchical model</div>
+      </div>
+
+      <div class="solution-row">
+        <div class="solution-label">02 / GOVERNANCE</div>
+        <div class="solution-body">
+          Upload through a wizard that captures procedure, asset, result, and file roles at the point of creation.
+        </div>
+        <div class="solution-spec">Metadata at source</div>
+      </div>
+
+      <div class="solution-row">
+        <div class="solution-label">03 / TRACEABILITY</div>
+        <div class="solution-body">
+          SHA-256 hashes on every file. Immutable audit trail on every action. Proof of what existed, when, and whether it changed.
+        </div>
+        <div class="solution-spec">Cryptographic verification</div>
+      </div>
+
+      <div class="solution-row">
+        <div class="solution-label">04 / RETRIEVAL</div>
+        <div class="solution-body">
+          Click a component. See every inspection ever performed on it. Open the evidence files in one click.
+        </div>
+        <div class="solution-spec">Seconds, not hours</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="capabilities">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">BUILT FOR NDE AND QA</div>
+      <h2 class="section-title">Deployed where your <em>data</em> lives.</h2>
+      <p class="section-lede">
+        Runs on your infrastructure. Mounts your existing file shares. Your data never leaves your network.
+      </p>
+    </div>
+
+    <div class="cap-grid">
+      <div class="cap-item">
+        <div class="cap-title">On-premises</div>
+        <p class="cap-desc">Single Docker deployment on your hardware. No SaaS. No cloud dependencies. ITAR-compatible architecture.</p>
+      </div>
+
+      <div class="cap-item">
+        <div class="cap-title">BYOS storage</div>
+        <p class="cap-desc">Bring your own storage. Nexus mounts your existing network shares. Files stay where they already live.</p>
+      </div>
+
+      <div class="cap-item">
+        <div class="cap-title">Code-aligned</div>
+        <p class="cap-desc">Built around the procedures and taxonomies NDE teams already use. ASME, ISO, and NBIC-ready.</p>
+      </div>
+
+      <div class="cap-item">
+        <div class="cap-title">Audit-ready exports</div>
+        <p class="cap-desc">One click generates a complete inspection package with manifest, files, and full audit trail.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-content container">
+    <div class="eyebrow accent">SEE IT LIVE</div>
+    <h2 class="cta-headline">Walk through your <em>actual workflow</em>.</h2>
+    <p class="cta-sub">
+      Private 30-minute demo. Asset-centric retrieval, upload governance, audit trail — with your vocabulary, not ours.
+    </p>
+    <a href="https://outlook.office365.com/owa/calendar/NexusDemo@mycolink.com/bookings/" class="btn-large" target="_blank" rel="noopener">
+      Schedule a demo
+      <span>→</span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2026 MycoLink Technologies LLC · Wyoming</div>
+  <div>
+    <a href="mailto:info@mycolink.com">info@mycolink.com</a>
+    <a href="mailto:support@mycolink.com">support@mycolink.com</a>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll state
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Hero diagram sequential reveal
+  window.addEventListener('load', () => {
+    const nodes = document.querySelectorAll('.node-group');
+    const lines = document.querySelectorAll('.connector-line');
+    const dots = document.querySelectorAll('.accent-dot');
+
+    // Combine and sort all animated elements by data-order
+    const elements = [
+      ...Array.from(nodes).map(el => ({el, type: 'node'})),
+      ...Array.from(lines).map(el => ({el, type: 'line'})),
+      ...Array.from(dots).map(el => ({el, type: 'dot'})),
+    ].sort((a, b) => parseInt(a.el.dataset.order) - parseInt(b.el.dataset.order));
+
+    elements.forEach((item, i) => {
+      setTimeout(() => {
+        if (item.type === 'node') {
+          item.el.classList.add('visible');
+          setTimeout(() => item.el.classList.add('pulsing'), 200);
+          setTimeout(() => item.el.classList.remove('pulsing'), 1200);
+        } else if (item.type === 'line') {
+          item.el.classList.add('drawn');
+        } else {
+          item.el.classList.add('visible');
+        }
+      }, 800 + i * 220);
+    });
+  });
+
+  // Scroll-triggered reveals
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.problem-item, .solution-row, .cap-item').forEach(el => {
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
